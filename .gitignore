@@ -1,0 +1,8 @@
+c.out
+/.vagrant/
+/.vscode/
+masquerade
+*.log
+vendor/
+vendor.orig/
+coverage.html
