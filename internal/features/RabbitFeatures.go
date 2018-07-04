@@ -15,8 +15,9 @@ package features
 
 import (
 	"fmt"
-	"masquerade/pkg/rabbit"
 	"strings"
+
+	"github.com/BBVA/masquerade/pkg/rabbit"
 
 	"github.com/DATA-DOG/godog/gherkin"
 )

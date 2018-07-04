@@ -17,7 +17,7 @@ import (
 	"flag"
 	"fmt"
 
-	m "masquerade/pkg/rabbit"
+	m "github.com/BBVA/masquerade/pkg/rabbit"
 
 	"github.com/streadway/amqp"
 )

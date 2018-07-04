@@ -14,8 +14,9 @@
 package mask
 
 import (
-	"masquerade/pkg/row"
 	"testing"
+
+	"github.com/BBVA/masquerade/pkg/row"
 )
 
 func TestMaskFactory(t *testing.T) {

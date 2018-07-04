@@ -15,7 +15,7 @@ package csv
 
 import (
 	"bytes"
-	r "masquerade/pkg/row"
+	r "github.com/BBVA/masquerade/pkg/row"
 	"testing"
 )
 

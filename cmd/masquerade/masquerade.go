@@ -18,28 +18,49 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"github.com/BBVA/masquerade/pkg/csv"
-	"github.com/BBVA/masquerade/pkg/row"
 	"os"
+	"strings"
+
+	"github.com/BBVA/masquerade/pkg/mask"
+	"github.com/BBVA/masquerade/pkg/row"
+
+	"github.com/ugorji/go/codec"
 )
 
 func main() {
-	sepPtr := flag.String("separator", ",", "field separator")
+	fieldsPtr := flag.String("fields", "", "mask config separated by , use ,, if no mask and sha256 to mask")
 	flag.Parse()
 
-	csvParse := csv.StringToRow(*sepPtr)
+	if *fieldsPtr == "" {
+		fmt.Fprint(os.Stderr, "Fields map expected")
+		os.Exit(1)
+	}
+
+	fields := strings.Split(*fieldsPtr, ",")
+
+	var handle codec.Handle = new(codec.MsgpackHandle)
+	reader := bufio.NewReader(os.Stdin)
+	dec := codec.NewDecoder(reader, handle)
+
+	masker := mask.Factory(fields)
 	binFormat := row.Row2Bytes()
 
-	snr := bufio.NewScanner(os.Stdin)
-	for snr.Scan() {
-		line := snr.Text()
-		if len(line) == 0 {
-			break
+	for {
+		resMsg := make([]interface{}, len(fields))
+		err := dec.Decode(&resMsg)
+
+		if err != nil {
+			if err == io.EOF {
+				os.Exit(0)
+			} else {
+				fmt.Fprintf(os.Stderr, "Unexpected error: %v\n", err)
+				os.Exit(1)
+			}
 		}
 
-		row, err := csvParse(line)
+		row, err := masker(resMsg)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			fmt.Fprintf(os.Stderr, "Unable to mask: %v\n", resMsg)
 		}
 
 		b, err := binFormat(row)
@@ -49,12 +70,6 @@ func main() {
 
 		_, err = os.Stdout.Write(b)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		}
-	}
-
-	if err := snr.Err(); err != nil {
-		if err != io.EOF {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	}

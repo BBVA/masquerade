@@ -18,7 +18,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"masquerade/pkg/csv"
+	"github.com/BBVA/masquerade/pkg/csv"
 	"os"
 	"strings"
 
