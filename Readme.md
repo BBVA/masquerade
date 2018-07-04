@@ -37,20 +37,20 @@ Will return binary format of the csv.
 
 ### From MsgPack -> CSV
 ```bash
-cat binary.out | maskcsvout -fields field1,field2
+cat binary.out | maskcsvout
 ```
-Will return "hello","World". MsgPack field order will vary because we encode a map. So you must provide the fields param. If input has no fields maskerade just put as field name field and the number of field, count starting at 1.
+Will return "hello","World".
 
 A complete usage may be.
 ```bash
-echo hello,World | maskcsvin -fields greet,person | maskcsvout -fields greet,person
+echo hello,World | maskcsvin | maskcsvout
 ```
-Will return "hello","World".
+Will return "hello","World". Notice that our process add quotes, thats because our binary don't know how looks the original csv, so try to build the most "correct" one.
 
 ### Custom separator
 You can use another separator like '|' or '@'. Just provide separator param.
 ```bash
-echo hello@World | maskcsvin -fields greet,person -separator '@' | maskcsvout -fields greet,person -separator '|'
+echo hello@World | maskcsvin -separator '@' | maskcsvout -separator '|'
 ```
 Will return "hello"|"World".
 
