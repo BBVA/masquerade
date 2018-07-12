@@ -41,7 +41,7 @@ func (Context) noParameters() error {
 
 func (ctx *Context) fields(fs *gherkin.DataTable) error {
 	params := make([]string, 2)
-	params[0] = "-fields"
+	params[0] = "--fields"
 	fields := gherkinTableToSlice(fs)
 	params[1] = strings.Join(fields, ",")
 
@@ -92,7 +92,10 @@ func (ctx *Context) exitCode(exitArg int) error {
 		return err
 	}
 	if result.ExitCodeObtained != exitArg {
-		return fmt.Errorf("expected exit code %d but %d obtain: %+v", exitArg, result.ExitCodeObtained, result)
+		return fmt.Errorf("expected exit code %d but %d obtain: %+v\n %s",
+			exitArg, result.ExitCodeObtained, result,
+			string(result.Stderr),
+		)
 	}
 	return nil
 }

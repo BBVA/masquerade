@@ -15,25 +15,29 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"os"
 
 	m "github.com/BBVA/masquerade/pkg/rabbit"
+	"github.com/spf13/cobra"
 
 	"github.com/streadway/amqp"
 )
 
-func main() {
-	rabbitDial := flag.String("dial", "", "Dial config")
-	rabbitChannel := flag.String("channel", "", "Channel from/to read/write")
-	flag.Parse()
+var (
+	rabbitDial    string
+	rabbitChannel string
+)
 
-	m.FailOnAbsentStringParam(rabbitDial, "Rabbit Dial expected")
-	m.FailOnAbsentStringParam(rabbitChannel, "Rabbit channel expected")
+var rootCmd = &cobra.Command{
+	Use:   "maskrabbitout",
+	Short: "masquerade rabbit mq export command",
+	Run:   maskrabbitoutMain,
+}
 
-	conn, err := amqp.Dial(*rabbitDial)
+func maskrabbitoutMain(cmd *cobra.Command, args []string) {
+	conn, err := amqp.Dial(rabbitDial)
 	if err != nil {
 		m.Fail("No connection")
 	}
@@ -45,12 +49,12 @@ func main() {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		*rabbitChannel, // name
-		false,          // durable
-		false,          // delete when usused
-		false,          // exclusive
-		false,          // no-wait
-		nil,            // arguments
+		rabbitChannel, // name
+		false,         // durable
+		false,         // delete when usused
+		false,         // exclusive
+		false,         // no-wait
+		nil,           // arguments
 	)
 	if err != nil {
 		m.Fail("No Queue")
@@ -85,5 +89,16 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	}
+}
 
+func main() {
+	rootCmd.Flags().StringVar(&rabbitDial, "dial", "", "Dial config, the rabbit to we write data")
+	rootCmd.Flags().StringVar(&rabbitChannel, "channel", "", "Channel to write data")
+	rootCmd.MarkFlagRequired("dial")
+	rootCmd.MarkFlagRequired("channel")
+
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
 }

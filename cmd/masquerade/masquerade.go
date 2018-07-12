@@ -15,11 +15,12 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+
+	"github.com/spf13/cobra"
 
 	"github.com/BBVA/masquerade/pkg/mask"
 	"github.com/BBVA/masquerade/pkg/row"
@@ -27,16 +28,18 @@ import (
 	"github.com/ugorji/go/codec"
 )
 
-func main() {
-	fieldsPtr := flag.String("fields", "", "mask config separated by , use ,, if no mask and sha256 to mask")
-	flag.Parse()
+var (
+	fieldsPtr string
+)
 
-	if *fieldsPtr == "" {
-		fmt.Fprint(os.Stderr, "Fields map expected")
-		os.Exit(1)
-	}
+var rootCommand = &cobra.Command{
+	Use:   "masquerade",
+	Short: "Masquerade allow you to anonimize data to safely make analitics",
+	Run:   masqueradeMain,
+}
 
-	fields := strings.Split(*fieldsPtr, ",")
+func masqueradeMain(cmd *cobra.Command, args []string) {
+	fields := strings.Split(fieldsPtr, ",")
 
 	var handle codec.Handle = new(codec.MsgpackHandle)
 	reader := bufio.NewReader(os.Stdin)
@@ -72,5 +75,17 @@ func main() {
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
+	}
+}
+
+func main() {
+	rootCommand.Flags().StringVar(&fieldsPtr,
+		"fields", "",
+		"Mask fields separated by , use ,, if no mask and sha256 to mask",
+	)
+	rootCommand.MarkFlagRequired("fields")
+	err := rootCommand.Execute()
+	if err != nil {
+		os.Exit(1)
 	}
 }

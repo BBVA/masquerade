@@ -15,27 +15,31 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
-	"github.com/BBVA/masquerade/pkg/csv"
 	"os"
 	"strings"
 
+	"github.com/BBVA/masquerade/pkg/csv"
+	"github.com/spf13/cobra"
+
 	"github.com/ugorji/go/codec"
 )
+
+var sepPtr string
+var fieldsPtr int
+
+var rootCmd = &cobra.Command{
+	Use:   "maskcsvout",
+	Short: "masquerade csv export command",
+	Run:   csvOutMain,
+}
 
 func parseFields(fields string) []string {
 	return strings.Split(fields, ",")
 }
 
-func main() {
-	fieldsPtr := flag.Int("fields", 0, "number of fields must have the output")
-	sepPtr := flag.String("separator", ",", "field separator")
-	flag.Parse()
-
-	//TODO: fields size must be known
-
+func csvOutMain(cmd *cobra.Command, args []string) {
 	var (
 		ld        byte = '\n'
 		formatter func(row []interface{}) ([]byte, error)
@@ -45,14 +49,14 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	dec := codec.NewDecoder(reader, handle)
 	for {
-		resMsg := make([]interface{}, *fieldsPtr)
+		resMsg := make([]interface{}, fieldsPtr)
 		err := dec.Decode(&resMsg)
 
 		if formatter == nil {
-			if *fieldsPtr == 0 {
-				formatter = csv.RowToBytes(*sepPtr, ld, len(resMsg))
+			if fieldsPtr == 0 {
+				formatter = csv.RowToBytes(sepPtr, ld, len(resMsg))
 			} else {
-				formatter = csv.RowToBytes(*sepPtr, ld, *fieldsPtr)
+				formatter = csv.RowToBytes(sepPtr, ld, fieldsPtr)
 			}
 		}
 
@@ -75,4 +79,15 @@ func main() {
 			}
 		}
 	}
+}
+
+func main() {
+	rootCmd.Flags().IntVar(&fieldsPtr, "fields", 0, "number of fields must have the output")
+	rootCmd.Flags().StringVar(&sepPtr, "separator", ",", "field separator")
+	err := rootCmd.Execute()
+
+	if err != nil {
+		os.Exit(1)
+	}
+
 }

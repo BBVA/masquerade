@@ -10,16 +10,17 @@ all: masquerade
 acceptance: masquerade
 	$(call gocmd,get github.com/DATA-DOG/godog/cmd/godog)
 	$(call gocmd,get github.com/DATA-DOG/godog)
-	docker rm -f rabbit || echo but its ok
-	docker network rm masqnet || echo but its ok
-	docker network create masqnet
-	docker run -d --name rabbit --net masqnet --hostname rabbit \
+	@docker rm -f rabbit || echo but its ok
+	@docker network rm masqnet || echo but its ok
+	@docker network create masqnet
+	@docker run -d --name rabbit --net masqnet --hostname rabbit \
 		-e RABBITMQ_DEFAULT_USER=guest -e RABBITMQ_DEFAULT_PASS=guest rabbitmq:3.7.6
-	sleep 10
-	docker run --rm -it --net masqnet \
-		-v $$(pwd)/.go:/go -v $$(pwd):/go/src/github.com/BBVA/masquerade -w /go/src/github.com/BBVA/masquerade/internal/features golang:1.10.3 godog -t "~@wip" . 
-	docker rm -f rabbit || echo but its ok
-	docker network rm masqnet || echo but its ok
+	@sleep 10
+	@docker run --rm -it --net masqnet \
+		-v $$(pwd)/.go:/go -v $$(pwd):/go/src/github.com/BBVA/masquerade \
+		-w /go/src/github.com/BBVA/masquerade/internal/features golang:1.10.3 godog -t "~@wip" . 
+	@docker rm -f rabbit || echo but its ok
+	@docker network rm masqnet || echo but its ok
 
 masquerade: test
 	$(call gocmd,install github.com/BBVA/masquerade/cmd/...)
@@ -34,3 +35,4 @@ cover: deps
 deps:
 	$(call gocmd,get github.com/ugorji/go/codec)
 	$(call gocmd,get github.com/streadway/amqp)
+	$(call gocmd,get github.com/spf13/cobra)

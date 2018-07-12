@@ -7,14 +7,14 @@ Feature: RabbitMQ masquerade connector
         Given No parameters
         When Invoke "maskrabbitin"
         Then exit code must be 1
-        And Error message should contain "Rabbit Dial expected"
+        And Error message should contain "Usage"
 
     Scenario: Valid Source config but no channel
         Given Dial parameter "amqp://guest:guest@rabbit:5672/"
         And No Channel
         When Invoke "maskrabbitin"
         Then exit code must be 1
-        And Error message should contain "channel expected"
+        And Error message should contain "Channel to read data"
     
     Scenario: Valid Source config read lines
         Given Dial parameter "amqp://guest:guest@rabbit:5672/"
@@ -35,14 +35,14 @@ Feature: RabbitMQ masquerade connector
         Given No parameters
         When Invoke "maskrabbitout"
         Then exit code must be 1
-        And Error message should contain "Rabbit Dial expected"
+        And Error message should contain "Usage"
     
     Scenario: Valid destination but no channel
         Given Dial parameter "amqp://guest:guest@rabbit:5672/"
         And No Channel
         When Invoke "maskrabbitout"
         Then exit code must be 1
-        And Error message should contain "channel expected"
+        And Error message should contain "Channel to write data"
     
     Scenario: Valid destination config write lines
         Given Dial parameter "amqp://guest:guest@rabbit:5672/"

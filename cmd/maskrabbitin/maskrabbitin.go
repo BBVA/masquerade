@@ -14,24 +14,30 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
 
 	m "github.com/BBVA/masquerade/pkg/rabbit"
 
 	"github.com/streadway/amqp"
 )
 
-func main() {
-	rabbitDial := flag.String("dial", "", "Dial config")
-	rabbitChannel := flag.String("channel", "", "Channel from/to read/write")
-	quantity := flag.Int("quantity", -1, "How many msg read, -1 for unlimited, default -1")
-	flag.Parse()
+var (
+	rabbitDial    string
+	rabbitChannel string
+	quantity      int
+)
 
-	m.FailOnAbsentStringParam(rabbitDial, "Rabbit Dial expected")
-	m.FailOnAbsentStringParam(rabbitChannel, "Rabbit channel expected")
+var rootCmd = &cobra.Command{
+	Use:   "maskrabbitin",
+	Short: "masquerade rabbit mq import command",
+	Run:   maskrabbitinMain,
+}
 
-	conn, err := amqp.Dial(*rabbitDial)
+func maskrabbitinMain(cmd *cobra.Command, args []string) {
+	conn, err := amqp.Dial(rabbitDial)
 	if err != nil {
 		m.Fail("No connection")
 	}
@@ -43,12 +49,12 @@ func main() {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		*rabbitChannel, // name
-		false,          // durable
-		false,          // delete when usused
-		false,          // exclusive
-		false,          // no-wait
-		nil,            // arguments
+		rabbitChannel, // name
+		false,         // durable
+		false,         // delete when usused
+		false,         // exclusive
+		false,         // no-wait
+		nil,           // arguments
 	)
 	if err != nil {
 		m.Fail("No Queue")
@@ -71,10 +77,10 @@ func main() {
 	go func() {
 		for d := range msgs {
 			fmt.Printf("%s\n", string(d.Body))
-			if *quantity > 0 {
-				*quantity--
+			if quantity > 0 {
+				quantity--
 			}
-			if *quantity == 0 {
+			if quantity == 0 {
 				forever <- false
 				break
 			}
@@ -82,4 +88,19 @@ func main() {
 	}()
 
 	_ = <-forever
+}
+
+func main() {
+	rootCmd.Flags().StringVar(&rabbitDial, "dial", "", "Dial config, the rabbit from we read data")
+	rootCmd.Flags().StringVar(&rabbitChannel, "channel", "", "Channel to read data")
+	rootCmd.Flags().IntVar(&quantity, "quantity", -1, "how many read after command kill itself")
+
+	rootCmd.MarkFlagRequired("dial")
+	rootCmd.MarkFlagRequired("channel")
+	rootCmd.Flags().MarkHidden("quantity")
+	err := rootCmd.Execute()
+
+	if err != nil {
+		os.Exit(1)
+	}
 }

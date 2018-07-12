@@ -31,7 +31,7 @@ func CsvFeatures(ctx *Context) []Feat {
 
 func (ctx *Context) separator(sep string) error {
 	params := make([]string, 2)
-	params[0] = "-separator"
+	params[0] = "--separator"
 	params[1] = sep
 
 	return addToParams(ctx.m, params)

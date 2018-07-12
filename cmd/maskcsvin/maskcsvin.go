@@ -15,19 +15,25 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
+	"os"
+
 	"github.com/BBVA/masquerade/pkg/csv"
 	"github.com/BBVA/masquerade/pkg/row"
-	"os"
+	"github.com/spf13/cobra"
 )
 
-func main() {
-	sepPtr := flag.String("separator", ",", "field separator")
-	flag.Parse()
+var sepPtr string
 
-	csvParse := csv.StringToRow(*sepPtr)
+var rootCmd = &cobra.Command{
+	Use:   "maskcsvin",
+	Short: "masquerade csv import command",
+	Run:   csvInMain,
+}
+
+func csvInMain(cmd *cobra.Command, args []string) {
+	csvParse := csv.StringToRow(sepPtr)
 	binFormat := row.Row2Bytes()
 
 	snr := bufio.NewScanner(os.Stdin)
@@ -57,5 +63,16 @@ func main() {
 		if err != io.EOF {
 			fmt.Fprintln(os.Stderr, err)
 		}
+	}
+}
+
+func main() {
+	rootCmd.Flags().StringVar(&sepPtr,
+		"separator", ",",
+		"Separator to use in csv format",
+	)
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
 	}
 }

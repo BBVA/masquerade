@@ -6,7 +6,7 @@ Feature: Mask sha256
         Given No parameters
         When Invoke "masquerade"
         Then exit code must be 1
-        And Error message should contain "Fields map expected"
+        And Error message should contain "Mask fields"
    
    Scenario: no mask
         Given Fields:

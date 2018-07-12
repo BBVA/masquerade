@@ -39,7 +39,7 @@ func (ctx *Context) noChannel() error {
 
 func (ctx *Context) channel(channel string) error {
 	params := make([]string, 2)
-	params[0] = "-channel"
+	params[0] = "--channel"
 	params[1] = channel
 
 	return addToParams(ctx.m, params)
@@ -47,7 +47,7 @@ func (ctx *Context) channel(channel string) error {
 
 func (ctx *Context) dialParameter(dial string) error {
 	params := make([]string, 2)
-	params[0] = "-dial"
+	params[0] = "--dial"
 	params[1] = dial
 
 	ctx.m["dial"] = dial
@@ -64,7 +64,7 @@ func (ctx *Context) channelWithLines(channel string, lines *gherkin.DocString) e
 	linesSlice := strings.Split(lines.Content, "\n")
 	linesSize := len(linesSlice)
 	params := make([]string, 2)
-	params[0] = "-quantity"
+	params[0] = "--quantity"
 	params[1] = fmt.Sprintf("%d", linesSize)
 	err = addToParams(ctx.m, params)
 	if err != nil {
