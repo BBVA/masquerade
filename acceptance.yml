@@ -1,0 +1,22 @@
+version: '3'
+services:
+  rabbit:
+    image: "rabbitmq:3.7.6"
+    networks:
+      - masqnet
+    environment:
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=guest
+  acceptance:
+    image: "golang:1.10.3"
+    volumes:
+      - .go:/go
+      - .:/go/src/github.com/BBVA/masquerade
+    working_dir: "/go/src/github.com/BBVA/masquerade/internal/features"
+    command: "/go/src/github.com/BBVA/masquerade/wait-for-it.sh rabbit:5672 -- godog -t \"~@wip\" ."
+    networks:
+      - masqnet
+
+networks:
+  masqnet:
+    driver: "bridge"
