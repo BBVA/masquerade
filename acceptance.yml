@@ -7,6 +7,39 @@ services:
     environment:
       - RABBITMQ_DEFAULT_PASS=guest
       - RABBITMQ_DEFAULT_USER=guest
+  
+  # s3:
+  #   image: minio/minio
+  #   environment:
+  #     MINIO_ACCESS_KEY: minio
+  #     MINIO_SECRET_KEY: minio123
+  #     MINIO_REGION: us-east-1
+  #   command: minio server /data
+  #   networks:
+  #     - masqnet
+
+  # s3-test:
+  #   image: "golang:1.10.3"
+  #   volumes:
+  #     - .go:/go
+  #     - .:/app
+  #     - .vagrant/root:/root
+  #   environment:
+  #     AWS_ACCESS_KEY_ID: minio
+  #     AWS_SECRET_ACCESS_KEY: minio123
+  #     AWS_REGION: us-east-1
+  #   command: |
+  #     /bin/bash -c "
+  #       wget -N https://dl.minio.io/client/mc/release/linux-amd64/mc && 
+  #       chmod +x mc && 
+  #       ./mc config host add s3 http://s3:9000 minio minio123 &&
+  #       ./mc mb mask &&
+  #       ./mc cp /app/Readme.md mask/Readme.md &&
+  #       ./mc cat mask/Readme.md
+  #     "
+  #   networks:
+  #     - masqnet
+
   acceptance:
     image: "golang:1.10.3"
     volumes:
