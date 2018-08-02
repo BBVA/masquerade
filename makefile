@@ -10,9 +10,9 @@ all: masquerade
 acceptance: masquerade
 	$(call gocmd,get github.com/DATA-DOG/godog/cmd/godog)
 	$(call gocmd,get github.com/DATA-DOG/godog)
-	@docker-compose -f acceptance.yml up -d rabbit
-	@docker-compose -f acceptance.yml up acceptance
-	@docker-compose -f acceptance.yml stop rabbit
+	@docker-compose -f acceptance.yml up -d rabbit s3
+	@docker-compose -f acceptance.yml up acceptance s3-test
+	@docker-compose -f acceptance.yml stop
 
 masquerade: test
 	$(call gocmd,install github.com/BBVA/masquerade/cmd/...)
