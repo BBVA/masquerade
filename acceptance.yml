@@ -18,6 +18,20 @@ services:
     networks:
       - masqnet
 
+  hdfs-test:
+    image: sequenceiq/hadoop-docker:2.7.0
+    volumes:
+      - .:/app
+    command: |
+      /bin/bash -c "
+        /etc/bootstrap.sh -bash &&
+        /usr/local/hadoop/bin/hdfs dfsadmin -safemode leave &&
+        cat /app/Readme.md | /usr/local/hadoop/bin/hdfs dfs -put - Readme.md &&
+        /usr/local/hadoop/bin/hdfs dfs -cat Readme.md
+      "
+    networks:
+      - masqnet
+
   s3-test:
     image: "golang:1.10.3"
     volumes:
@@ -40,7 +54,7 @@ services:
       "
     networks:
       - masqnet
-
+  
   acceptance:
     image: "golang:1.10.3"
     volumes:
