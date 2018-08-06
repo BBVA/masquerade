@@ -78,6 +78,23 @@ You can copy a queue using this commands together:
 maskrabbitin -dial amqp://guest:guest@localhost:5672/ -channel topicA | maskrabbitout -dial amqp://guest:guest@localhost:5672/ -channel topicB
 ```
 
+HDFS
+----
+HDFS has stdio support, just use is as follows.
+
+To read:
+```bash
+hdfs dfs -cat data.csv
+```
+
+To write:
+```bash
+cat data.csv | hdfs dfs -put - data.csv
+```
+
+S3 + GCS (Google Cloud Storage) + Minio
+---------------------------------------
+This services can be accesed with stdio support thru [minio-cli](https://github.com/minio/mc#add-a-cloud-storage-service).
 
 Roadmap
 -------
