@@ -15,8 +15,9 @@ package csv
 
 import (
 	"bytes"
-	r "github.com/BBVA/masquerade/pkg/row"
 	"testing"
+
+	r "github.com/BBVA/masquerade/pkg/row"
 )
 
 func isXTestRun(t *testing.T, inputs []string, expected []bool, f func(string) bool) {
@@ -81,13 +82,18 @@ func TestStringToRow(t *testing.T) {
 		"\"hi\";\"Bob Dylan\"",
 		"\"hi\";666",
 		"\"hi\";6.66",
+		"1;6.66",
+		"1 ",
 	}
 
-	expected := make([][]interface{}, 3)
+	expected := make([][]interface{}, 5)
 	builder := r.NewRow(2)
 	expected[0] = builder("hi", "Bob Dylan")
 	expected[1] = builder("hi", 666)
 	expected[2] = builder("hi", 6.66)
+	expected[3] = builder(1, 6.66)
+
+	expected[4] = r.NewRow(1)(1)
 
 	formatter := StringToRow(";")
 
@@ -106,17 +112,19 @@ func TestStringToRow(t *testing.T) {
 }
 
 func TestRowToBytes(t *testing.T) {
-	inp := make([][]interface{}, 4)
+	inp := make([][]interface{}, 5)
 	builder := r.NewRow(2)
 	inp[0] = builder("hi", "Bob Dylan")
 	inp[1] = builder("hi", 666)
 	inp[2] = builder("hi", 6.66)
 	inp[3] = builder([]uint8("hi"), []uint8("Bob Dylan"))
+	inp[4] = builder(1, 6.66)
 	expected := []string{
 		"\"hi\";\"Bob Dylan\"\n",
 		"\"hi\";666\n",
 		"\"hi\";6.66\n",
 		"\"hi\";\"Bob Dylan\"\n",
+		"1;6.66\n",
 	}
 
 	formatter := RowToBytes(";", '\n', 2)

@@ -15,6 +15,8 @@ package csv
 
 import (
 	"fmt"
+	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -30,14 +32,16 @@ Since csv is just unttyped format this functions will provide some basic type ch
 
 // isFloatNumber
 func isFloatNumber(x string) bool {
+	clean := strings.TrimSpace(x)
 	valid := regexp.MustCompile(`^[0-9]+\.[0-9]+$`)
-	return valid.MatchString(x)
+	return valid.MatchString(clean)
 }
 
 // isIntNumber
 func isIntNumber(x string) bool {
+	clean := strings.TrimSpace(x)
 	valid := regexp.MustCompile(`^[0-9]+$`)
-	return valid.MatchString(x)
+	return valid.MatchString(clean)
 }
 
 // StringToRow convert from raw csv string to internal row
@@ -47,15 +51,22 @@ func StringToRow(fieldSeparator string) func(string) ([]interface{}, error) {
 		row := make([]interface{}, len(parts))
 
 		for i, x := range parts {
+			clean := strings.TrimSpace(x)
 			var field interface{}
-			if isFloatNumber(x) {
-				rawFloat, _ := strconv.ParseFloat(x, 64)
+			if isFloatNumber(clean) {
+				rawFloat, err := strconv.ParseFloat(clean, 64)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "cant parse float: %v\n", err)
+				}
 				field = rawFloat
-			} else if isIntNumber(x) {
-				rawInteger, _ := strconv.Atoi(x)
+			} else if isIntNumber(clean) {
+				rawInteger, err := strconv.Atoi(clean)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "cant parse int: %v\n", err)
+				}
 				field = rawInteger
 			} else {
-				rawString := strings.Replace(x, "\"", "", -1)
+				rawString := strings.Replace(clean, "\"", "", -1)
 				field = rawString
 			}
 			if field == nil {
@@ -90,8 +101,12 @@ func RowToBytes(fieldSeparator string, lineDelimiter byte, parts int) func(row [
 				out = strconv.AppendQuote(out, string([]byte(v)))
 			case int:
 				out = strconv.AppendInt(out, int64(v), 10)
+			case int64:
+				out = strconv.AppendInt(out, v, 10)
 			case float64:
 				out = strconv.AppendFloat(out, v, 'f', -1, 64)
+			default:
+				fmt.Fprintf(os.Stderr, "unexpected type %v\n", reflect.TypeOf(value))
 			}
 		}
 		out = append(out, lineDelimiter)
