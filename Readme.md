@@ -1,6 +1,18 @@
 Masquerade
 ==========
 
+In a nutshell Masquerade can hide your sensible data. We use it to upload our data to Artificial Inteligence clouds safely.
+
+So you can turn this:
+
+![clean data](https://github.com/BBVA/masquerade/exampleData/cleanData.png "clean data")
+
+
+Into this:
+
+![tokenized data](https://github.com/BBVA/masquerade/exampleData/masked.png "tokenized data")
+
+
 Masquerade is library and command line utility.
 The code under pkg can be used to tokenize and deal with several formats and fonts.
 There is several executables that you can pipe bash style to fill your tokenization requirements.
