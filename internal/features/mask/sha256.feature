@@ -29,3 +29,14 @@ Feature: Mask sha256
         Then exit code must be 0
         And StdOut should be msgpack:
         | hello | ef61a579c907bbed674c0dbcbcf7f7af8f851538eef7b8e58c5bee0b8cfdac4a |
+
+   Scenario: mask one field starting number
+        Given Fields:
+        ||
+        |sha256|
+        When pass thru StdIn msgpack:
+        | 1 | John Smith |
+        And Invoke "masquerade"
+        Then exit code must be 0
+        And StdOut should be msgpack:
+        | 1 | ef61a579c907bbed674c0dbcbcf7f7af8f851538eef7b8e58c5bee0b8cfdac4a |
