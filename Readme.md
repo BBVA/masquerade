@@ -5,12 +5,12 @@ In a nutshell Masquerade can hide your sensible data. We use it to upload our da
 
 So you can turn this:
 
-![clean data](https://github.com/BBVA/masquerade/exampleData/cleanData.png "clean data")
+![clean data](https://github.com/BBVA/masquerade/blob/master/exampleData/cleanData.PNG "clean data")
 
 
 Into this:
 
-![tokenized data](https://github.com/BBVA/masquerade/exampleData/masked.png "tokenized data")
+![tokenized data](https://github.com/BBVA/masquerade/blob/master/exampleData/masked.PNG "tokenized data")
 
 
 Masquerade is library and command line utility.
