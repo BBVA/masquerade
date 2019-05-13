@@ -10,7 +10,7 @@ Maquerade - high-performance, real-time, multi-location data obfuscation tool
    :alt: Documentation Status
 
 .. figure:: https://raw.githubusercontent.com/BBVA/masquerade/master/docs/source/_static/images/masquerade-logo-small.png
-   :align: left
+   :align: center
 
 In a nutshell ``Masquerade`` can hide your sensible data. We use it to upload our data to Artificial Inteligence clouds safely.
 
