@@ -6,3 +6,4 @@ c.out
 vendor/
 vendor.orig/
 coverage.html
+build/
