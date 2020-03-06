@@ -99,10 +99,26 @@ func RowToBytes(fieldSeparator string, lineDelimiter byte, parts int) func(row [
 				out = strconv.AppendQuote(out, v)
 			case []uint8:
 				out = strconv.AppendQuote(out, string([]byte(v)))
+			case uint8:
+				out = strconv.AppendUint(out, uint64(v), 10)
+			case uint16:
+				out = strconv.AppendUint(out, uint64(v), 10)
+			case uint32:
+				out = strconv.AppendUint(out, uint64(v), 10)
+			case uint64:
+				out = strconv.AppendUint(out, v, 10)
 			case int:
+				out = strconv.AppendInt(out, int64(v), 10)
+			case int8:
+				out = strconv.AppendInt(out, int64(v), 10)
+			case int16:
+				out = strconv.AppendInt(out, int64(v), 10)
+			case int32:
 				out = strconv.AppendInt(out, int64(v), 10)
 			case int64:
 				out = strconv.AppendInt(out, v, 10)
+			case float32:
+				out = strconv.AppendFloat(out, float64(v), 'f', -1, 64)
 			case float64:
 				out = strconv.AppendFloat(out, v, 'f', -1, 64)
 			default:

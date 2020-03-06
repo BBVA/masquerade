@@ -29,6 +29,8 @@ func hashSha256(value interface{}) interface{} {
 		aStringToHash = string([]byte(v))
 	case int:
 		aStringToHash = strconv.Itoa(v)
+	case int64:
+		aStringToHash = strconv.FormatInt(v, 10)
 	case float64:
 		aStringToHash = strconv.FormatFloat(v, 'f', -1, 64)
 	}
